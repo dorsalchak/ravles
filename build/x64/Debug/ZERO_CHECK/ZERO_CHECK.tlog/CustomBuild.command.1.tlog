@@ -1,0 +1,10 @@
+^C:\RAVLES\BUILD\CMAKEFILES\5481FA8CC38CAEA491D138C83F99945B\GENERATE.STAMP.RULE
+setlocal
+"C:\Program Files\CMake\bin\cmake.exe" -SC:/ravles -BC:/ravles/build --check-stamp-list CMakeFiles/generate.stamp.list --vs-solution-file C:/ravles/build/ravles.sln
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal & call :cmErrorLevel %errorlevel% & goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd

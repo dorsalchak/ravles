@@ -1,0 +1,2 @@
+C:\ravles\build\external\glad\Debug\glad.pdb
+C:\ravles\build\external\glad\glad.dir\Debug\glad.pdb

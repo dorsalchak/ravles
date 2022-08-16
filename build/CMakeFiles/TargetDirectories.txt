@@ -1,0 +1,8 @@
+C:/ravles/build/CMakeFiles/ravles.dir
+C:/ravles/build/CMakeFiles/ALL_BUILD.dir
+C:/ravles/build/CMakeFiles/ZERO_CHECK.dir
+C:/ravles/build/external/glfw/CMakeFiles/ALL_BUILD.dir
+C:/ravles/build/external/glfw/src/CMakeFiles/glfw.dir
+C:/ravles/build/external/glfw/src/CMakeFiles/update_mappings.dir
+C:/ravles/build/external/glad/CMakeFiles/glad.dir
+C:/ravles/build/external/glad/CMakeFiles/ALL_BUILD.dir
