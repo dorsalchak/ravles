@@ -2,48 +2,57 @@
 #include <GLFW/glfw3.h>
 #include <iostream>
 
-int main(void)
+void framebuffer_size_callback(GLFWwindow* pWindow, int width, int height);
+void processInput(GLFWwindow *pWindow);
+
+int main()
 {
-    GLFWwindow* window;
+	glfwInit();
+	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
+	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
+	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
-    /* Initialize the library */
-    if (!glfwInit())
-        return -1;
+	GLFWwindow* pWindow = glfwCreateWindow(800, 600, "rav", nullptr, nullptr);
 
-    /* Create a windowed mode window and its OpenGL context */
-    window = glfwCreateWindow(640, 480, "Hello World", NULL, NULL);
-    if (!window)
-    {
-        glfwTerminate();
-        return -1;
-    }
+	if (!pWindow)
+	{
+		std::cout << "Failed to crate window"<<std::endl;
+		glfwTerminate();
+		return -1;
+	}
+	
+	glfwMakeContextCurrent(pWindow);
+	glfwSetFramebufferSizeCallback(pWindow, framebuffer_size_callback);
 
-    /* Make the window's context current */
-    glfwMakeContextCurrent(window);
+	if (!gladLoadGL())
+	{
+		std::cout << "Glad cant load" << std::endl;
+		return -1;
+	}
 
-    if (!gladLoadGL())
-    {
-        std::cout << "Can't load Glad" << std::endl;
-        return -1;
-    }
+	while (!glfwWindowShouldClose(pWindow))
+	{
+		processInput(pWindow);
 
-    std::cout << "OpenGL " << GLVersion.major << '.' << GLVersion.minor << std::endl;
+		glClearColor(0, 1, 0, 1);
+		glClear(GL_COLOR_BUFFER_BIT);
 
-    glClearColor(0, 1, 0, 1);
+		glfwSwapBuffers(pWindow);
+		glfwPollEvents();
+	}
 
-    /* Loop until the user closes the window */
-    while (!glfwWindowShouldClose(window))
-    {
-        /* Render here */
-        glClear(GL_COLOR_BUFFER_BIT);
+	glfwTerminate();
+	return 0;
+}	
 
-        /* Swap front and back buffers */
-        glfwSwapBuffers(window);
-
-        /* Poll for and process events */
-        glfwPollEvents();
-    }
-
-    glfwTerminate();
-    return 0;
+void framebuffer_size_callback(GLFWwindow* pWindow, int width, int height)
+{
+	glViewport(0, 0, width, height);
+}
+void processInput(GLFWwindow* pWindow)
+{
+	if (glfwGetKey(pWindow, GLFW_KEY_ESCAPE) == GLFW_PRESS)
+	{
+		glfwSetWindowShouldClose(pWindow, true);
+	}
 }
