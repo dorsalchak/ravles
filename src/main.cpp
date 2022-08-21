@@ -108,10 +108,13 @@ int main()
 
 	float vertices[] =
 	{
-		 0.5f,  0.5f, 0.0f,   //правав€ верхн€€
-		 0.5f, -0.5f, 0.0f,   //правав€ нижн€€
-		-0.5f,  0.5f, 0.0f,   //лева€ верхн€€
-		-0.5f, -0.5f, 0.0f    //лева€ нижн€€
+		-0.5f, -0.5f, 0.0f,   //
+		 0.0f, -0.5f, 0.0f,   //
+		-0.25f, 0.0f, 0.0f,   //
+	    //
+		0.5f, -0.5f, 0.0f,
+		0.0f, -0.5f, 0.0f,
+		0.25f, 0.0f, 0.0f,
 	};
 	
 	unsigned int indices[] = {
@@ -151,10 +154,13 @@ int main()
 		glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
 		glClear(GL_COLOR_BUFFER_BIT);
 
+		//glPolygonMode(GL_FRONT_AND_BACK, GL_LINE); отрисовка только линий треугольников, каркас
+		
 		glUseProgram(shaderProgram);
 		glBindVertexArray(VAO);
-		glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
-		glBindVertexArray(0);
+		//glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+		glDrawArrays(GL_TRIANGLES, 0, 6);
+		//glBindVertexArray(0);
 
 		glfwSwapBuffers(pWindow);
 		glfwPollEvents();
