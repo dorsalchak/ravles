@@ -121,10 +121,10 @@ int main()
 
 	unsigned int VBO, VAO;
 
-	glBindVertexArray(VAO);
-
-	glGenBuffers(1, &VBO);
 	glGenVertexArrays(1, &VAO);
+	glGenBuffers(1, &VBO);
+
+	glBindVertexArray(VAO);
 
 	//glBindVertexArray(VAO);
 	glBindBuffer(GL_ARRAY_BUFFER, VBO);
