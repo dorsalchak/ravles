@@ -2,25 +2,33 @@
 #include <GLFW/glfw3.h>
 #include <iostream>
 
-void processInput(GLFWwindow *pWindow);
 void framebuffer_size_callback(GLFWwindow *pWindow, int width, int height);
+void processInput(GLFWwindow* pWindow);
 
 const unsigned int SCR_WIDTH = 800;
 const unsigned int SCR_HEIGHT = 600;
 
 const char* vertexShaderSource = "#version 330 core\n"
-"layout (location = 0) in vec3 aPos;\n"
-"void main()\n"
-"{\n"
-"gl_Position = vec4(aPos.x, aPos.y, aPos.z, 1.0);"
-"}\n";
+	"layout (location = 0) in vec3 aPos;\n"
+	"void main()\n"
+	"{\n"
+		"gl_Position = vec4(aPos.x, aPos.y, aPos.z, 1.0);"
+	"}\0";
 
-const char* fragmentShaderSource = "#version 330 core\n"
-"out vec4 FragColor;\n"
-"void main()\n"
-"{\n"
-"FragColor = vec4(1.0f, 0.5f, 0.2f, 1.0f);\n"
-"}\n";
+const char* fragmentShaderSource1 = "#version 330 core\n"
+	"out vec4 FragColor;\n"
+	"void main()\n"
+	"{\n"
+	"	FragColor = vec4(1.0f, 0.5f, 0.2f, 1.0f);\n"
+	"}\n\0";
+
+const char* fragmentShaderSource2 = "#version core 330\n"
+	"out vec4 FragColor;\n"
+	"void main()\n"
+	"{\n"
+	"	FragColor = vec4(1.0f, 1.0f, 0.0f, 1.0f);\n"
+	"}\n\0";
+
 
 int main()
 {
@@ -47,105 +55,85 @@ int main()
 		return -1;
 	}
 
-	
-	unsigned int vertexShader;
-	vertexShader = glCreateShader(GL_VERTEX_SHADER);
+
+	unsigned int vertexShader = glCreateShader(GL_VERTEX_SHADER);
+	unsigned int fragmentShaderOrange = glCreateShader(GL_FRAGMENT_SHADER);
+	unsigned int fragmentShaderYellow = glCreateShader(GL_FRAGMENT_SHADER);
+	unsigned int shaderProgramOrange = glCreateProgram();
+	unsigned int shaderProgramYellow = glCreateProgram();
+
 	glShaderSource(vertexShader, 1, &vertexShaderSource, NULL);
 	glCompileShader(vertexShader);
-	{
-		int success;
-		char infoLog[512];
-		glGetShaderiv(vertexShader, GL_COMPILE_STATUS, &success);
+	glShaderSource(fragmentShaderOrange, 1, &fragmentShaderSource1, NULL);
+	glCompileShader(fragmentShaderOrange);
+	glShaderSource(fragmentShaderYellow, 1, &fragmentShaderSource2, NULL);
+	glCompileShader(fragmentShaderYellow);
 
-		if (!success)
-		{
-			glGetShaderInfoLog(vertexShader, 512, NULL, infoLog);
-			std::cout << "VERTEX SHADER COMPILE FAILED" << std::endl;
-		}
-	}
-	//проверка вершинного шейдера
+	//связываниe первого объекта
+	glAttachShader(shaderProgramOrange, vertexShader);
+	glAttachShader(shaderProgramOrange, fragmentShaderOrange);
+	glLinkProgram(shaderProgramOrange);
+
+	//связывание второго объекта
+	glAttachShader(shaderProgramYellow, vertexShader);
+	glAttachShader(shaderProgramYellow, fragmentShaderYellow);
+	glLinkProgram(shaderProgramYellow);
 
 	
 
-	unsigned int fragmentShader;
-	fragmentShader = glCreateShader(GL_FRAGMENT_SHADER);
-	glShaderSource(fragmentShader, 1, &fragmentShaderSource, NULL);
-	glCompileShader(fragmentShader);
-	{
-		int success1;
-		char infoLog1[512];
-		glGetShaderiv(fragmentShader, GL_COMPILE_STATUS, &success1);
-
-		if (!success1)
-		{
-			glGetShaderInfoLog(fragmentShader, 512, NULL, infoLog1);
-			std::cout << "FRAGMENT SHADER COMPILE FAILED" << std::endl;
-		}
-	}
-	//проверка фрагментного шейдера
-
-	//Создание шейдерной программы и объединение шейдеров
-	unsigned int shaderProgram;
-	shaderProgram = glCreateProgram();
-	glAttachShader(shaderProgram, vertexShader);
-	glAttachShader(shaderProgram, fragmentShader);
-	glLinkProgram(shaderProgram);
-	{
-	int success2;
-	char infoLog[512];
-	glGetProgramiv(shaderProgram, GL_COMPILE_STATUS, &success2);
-
-	if (!success2)
-	{
-		glGetProgramInfoLog(shaderProgram, 512, NULL, infoLog);
-		std::cout << "SHADER PROGRAM FAILED" << std::endl;
-	}
-	}
-	// проверка шейдерной программый
-	
-	glDeleteShader(vertexShader);
-	glDeleteShader(fragmentShader);
-
-	float firstTriangle[] =
-	{
-		-0.5f, -0.5f, 0.0f,   //
-		 0.0f, -0.5f, 0.0f,   //
-		-0.25f, 0.0f, 0.0f,   
+	float firstTriangle[] = {
+		-0.9f, -0.5f, 0.0f,  // слева
+		-0.0f, -0.5f, 0.0f,  // справа
+		-0.45f, 0.5f, 0.0f,  // вверху
 	};
-	float secondTriangle[] =
-	{
-		0.5f, -0.5f, 0.0f,
-		0.0f, -0.5f, 0.0f,
-		0.25f, 0.0f, 0.0f,
+	float secondTriangle[] = {
+		0.0f, -0.5f, 0.0f,  // слева
+		0.9f, -0.5f, 0.0f,  // справа
+		0.45f, 0.5f, 0.0f   // вверху
 	};
+
+	unsigned int VBO[2], VAO[2];
+
+	glGenVertexArrays(2, VAO);
+	glGenBuffers(2, VBO);
+
+	//настройка первого треугольника
+	glBindVertexArray(VAO[0]);
+	glBindBuffer(GL_ARRAY_BUFFER, VBO[0]);
+	glBufferData(GL_ARRAY_BUFFER, sizeof(firstTriangle), &firstTriangle, GL_STATIC_DRAW);
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
+	glEnableVertexAttribArray(0);
+
+	//настройка второго треугольника
+	glBindVertexArray(VAO[1]);
+	glBindBuffer(GL_ARRAY_BUFFER, VBO[1]);
+	glBufferData(GL_ARRAY_BUFFER, sizeof(secondTriangle), &secondTriangle, GL_STATIC_DRAW);
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, (void*)0);
+	glEnableVertexAttribArray(0);
+
+
+
+
+	//{
+	//	int success1;
+	//	char infoLog1[512];
+	//	glGetShaderiv(fragmentShader1, GL_COMPILE_STATUS, &success1);
+
+	//	if (!success1)
+	//	{
+	//		glGetShaderInfoLog(fragmentShader1, 512, NULL, infoLog1);
+	//		std::cout << "FRAGMENT SHADER COMPILE FAILED" << std::endl;
+	//	}
+	//}
+
 	
 	/*unsigned int indices[] = {
 		0, 1, 2,
 		1, 2, 3
-	};*/
-
-	
-	unsigned int VBOs[2], VAOs[2];
-
-	glGenVertexArrays(2, VAOs);
-	glGenBuffers(2, VBOs);
-	
-	//Первый треугольник
-	glBindVertexArray(VAOs[0]);
-	glBindBuffer(GL_ARRAY_BUFFER, VBOs[0]);
-	glBufferData(GL_ARRAY_BUFFER, sizeof(firstTriangle), firstTriangle, GL_STATIC_DRAW);
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);	
-	glEnableVertexAttribArray(0);
-
-	//втоорой тругольник
-	glBindVertexArray(VAOs[1]);
-	glBindBuffer(GL_ARRAY_BUFFER, VBOs[1]);
-	glBufferData(GL_ARRAY_BUFFER, sizeof(secondTriangle), secondTriangle, GL_STATIC_DRAW);
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
-	glEnableVertexAttribArray(0);
+	};*/	
 
 	//----------------------------------------------------
-	//glPolygonMode(GL_FRONT_AND_BACK, GL_LINE); отрисовка только линий треугольников, каркас
+//	glPolygonMode(GL_FRONT_AND_BACK, GL_LINE); //отрисовка только линий треугольников, каркас
 
 	while (!glfwWindowShouldClose(pWindow))
 	{
@@ -153,25 +141,22 @@ int main()
 
 		glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
 		glClear(GL_COLOR_BUFFER_BIT);
-		
-		glUseProgram(shaderProgram);
-		/*glBindVertexArray(VAO);
-		glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
-		glDrawArrays(GL_TRIANGLES, 0, 6);
-		glBindVertexArray(0);*/
 
-		glBindVertexArray(VAOs[0]);
+		glUseProgram(shaderProgramOrange);
+		glBindVertexArray(VAO[0]);
 		glDrawArrays(GL_TRIANGLES, 0, 3);
 
-		glBindVertexArray(VAOs[1]);
+		glUseProgram(shaderProgramYellow);
+		glBindVertexArray(VAO[1]);
 		glDrawArrays(GL_TRIANGLES, 0, 3);
 
 		glfwSwapBuffers(pWindow);
 		glfwPollEvents();
+
 	}
 
-	glDeleteVertexArrays(2, VAOs);
-	glDeleteBuffers(2, VBOs);
+	glDeleteVertexArrays(2, VAO);
+	glDeleteBuffers(2, VBO);
 
 	glfwTerminate();
 	return 0;
